@@ -37,3 +37,12 @@ model Formulario {
   fecha_subido DateTime @default(now())
   fecha_actualizado DateTime @updatedAt
 } 
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  gmail      String
+  password   String
+  estatus String 
+  fecha_subido DateTime @default(now())
+  fecha_actualizado DateTime @updatedAt
+} 
