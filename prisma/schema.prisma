@@ -22,7 +22,8 @@ model hotel {
   cantidad_habitaciones     Int
   imagen_h String? 
   descripcion String
-  precio  Int?
+  precio  Int
+  tiene_catering Boolean
   fecha_subido DateTime @default(now())
   fecha_actualizado DateTime @updatedAt
 } 
