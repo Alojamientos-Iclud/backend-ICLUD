@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const hotelesRouter = require("./src/routes/hoteles");
 const checkoutRouter = require("./src/routes/checkout");
+const authRouter = require("./src/routes/auth");
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 
 app.use("/api/hoteles", hotelesRouter);
 app.use("/api/checkout", checkoutRouter);
+app.use("/api/admin", authRouter);
 
 const PORT = process.env.PORT || 3000;
 
