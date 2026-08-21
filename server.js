@@ -16,7 +16,7 @@ app.use("/api/hoteles", hotelesRouter);
 app.use("/api/checkout", checkoutRouter);
 app.use("/api/admin", authRouter);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3100;
 
 app.listen(PORT, () => {
     console.log(`Servidor iniciado en puerto ${PORT}`);
