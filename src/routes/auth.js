@@ -35,11 +35,13 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ error: "Credenciales inválidas" });
         }
 
-        if (usuario.estatus !== "admin") {
+        if (usuario.estatus !== "admin" && usuario.estatus !== "hotelero") {
             return res.status(403).json({ error: "No tenés permisos para acceder" });
         }
 
-        res.json({ mensaje: "Acceso concedido" });
+        res.json({ mensaje: "Acceso concedido",
+            estatus: usuario.estatus
+         })
 
     } catch (error) {
 
