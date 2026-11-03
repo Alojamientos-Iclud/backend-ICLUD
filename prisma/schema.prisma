@@ -39,10 +39,24 @@ model Formulario {
 } 
 
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  gmail      String
-  password   String
-  estatus String 
-  fecha_subido DateTime @default(now())
-  fecha_actualizado DateTime @updatedAt
-} 
+  id                  Int        @id @default(autoincrement())
+  gmail               String
+  password            String
+  estatus             String
+  fecha_subido        DateTime   @default(now())
+  fecha_actualizado   DateTime   @updatedAt
+  favoritos           Favorito[] 
+}
+
+model Favorito {
+  id                Int      @id @default(autoincrement())
+  idUsuario         Int
+  usuario           Usuario  @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+  nombreAlojamiento String
+  precio            Float?
+  urlOrigen         String
+  imagenUrl         String?
+  fechaGuardado     DateTime @default(now())
+
+  @@unique([idUsuario, urlOrigen])
+}
