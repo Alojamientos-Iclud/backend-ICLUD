@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const DURACION_MS = 7 * 24 * 60 * 60 * 1000;
 
 function secreto() {
-    return process.env.AUTH_SECRET ||
+    return process.env.AUTH_SECRET || process.env.JWT_SECRET ||
         crypto.createHash("sha256").update("iclud-auth:" + String(process.env.DATABASE_URL || "")).digest("hex");
 }
 

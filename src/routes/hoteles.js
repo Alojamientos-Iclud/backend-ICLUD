@@ -1,7 +1,5 @@
 const express = require("express");
-const { PrismaClient } = require("@prisma/client");
-const { PrismaPg } = require("@prisma/adapter-pg");
-const prisma = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL) });
+const prisma = require("../lib/prisma");
 const router = express.Router();
 
 router.get("/", async (req, res) => {

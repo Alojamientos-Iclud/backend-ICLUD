@@ -1,9 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const { firmarToken } = require("../services/token");
-const { PrismaClient } = require("@prisma/client");
-const { PrismaPg } = require("@prisma/adapter-pg");
-const prisma = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL) });
+const prisma = require("../lib/prisma");
 const router = express.Router();
 
 router.post("/login", async (req, res) => {

@@ -5,11 +5,10 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_APP_PASS,
-    },
-    tls: {
-        rejectUnauthorized: false
     }
 });
+
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, salida, noches, cantidad_huespedes, precioNoche, precioTotal, stripeUrl }) {
 
@@ -42,7 +41,7 @@ async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, 
 
               <tr>
                 <td style="padding:36px 40px 0;">
-                  <h2 style="color:#1a1a2e;margin:0 0 8px;">¡Hola, ${nombre_completo}! 👋</h2>
+                  <h2 style="color:#1a1a2e;margin:0 0 8px;">¡Hola, ${esc(nombre_completo)}! 👋</h2>
                   <p style="color:#555;font-size:15px;line-height:1.6;margin:0;">
                     Recibimos tu solicitud de reserva. Revisá los detalles a continuación y cuando estés listo,
                     hacé clic en el botón para completar el pago de forma segura con Stripe.
@@ -56,7 +55,7 @@ async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, 
                     <tr>
                       <td style="padding-bottom:16px;">
                         <p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;">Alojamiento</p>
-                        <p style="margin:4px 0 0;font-size:18px;font-weight:bold;color:#1a1a2e;">${hotel.nombre}</p>
+                        <p style="margin:4px 0 0;font-size:18px;font-weight:bold;color:#1a1a2e;">${esc(hotel.nombre)}</p>
                       </td>
                     </tr>
                     <tr>

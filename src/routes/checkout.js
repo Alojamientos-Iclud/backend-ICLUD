@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { enviarMailConfirmacion } = require('../services/mailer');
-const { PrismaClient } = require('@prisma/client');
-const { PrismaPg } = require('@prisma/adapter-pg');
-const prisma = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL) });
+const prisma = require("../lib/prisma");
+
+const FRONTEND = String(process.env.FRONTEND_URL || 'https://iclud-sitio-web.vercel.app').split(',')[0].trim().replace(/\/+$/, '');
 
 async function procesarCheckout(req, res) {
     try {
@@ -46,8 +46,8 @@ async function procesarCheckout(req, res) {
                 quantity: 1,
             }],
             mode: 'payment',
-            success_url: 'http://localhost:3000/success.html',
-            cancel_url:  'http://localhost:3000/cancel.html',
+            success_url: `${FRONTEND}/?pago=exitoso`,
+            cancel_url:  `${FRONTEND}/?pago=cancelado`,
         });
 
         console.log("4 - Mail enviado");
