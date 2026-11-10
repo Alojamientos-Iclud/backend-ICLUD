@@ -4,12 +4,6 @@ const { PrismaPg } = require("@prisma/adapter-pg");
 const prisma = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL) });
 const router = express.Router();
 
-
-/*
-    GET /api/hoteles (pongan eso cada vez que hagan un endpoint con esta API)
-
-    Devuelve todos los hoteles registrados (nuestros)
-*/
 router.get("/", async (req, res) => {
     try {
 
@@ -32,11 +26,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-/*
-    POST /api/hoteles (pongan eso cada vez que hagan un endpoint con esta API)
-
-    Crea (mas bien añade) un alojamiento nuevo a nuestra bd
-*/
 router.post("/", async (req, res) => {
 
     try {
@@ -80,11 +69,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-/*
-    DELETE /api/hoteles/:id (pongan eso cada vez que hagan un endpoint con esta API)    
-
-    Elimina un hotel de nuestra base de datos.
-*/
 router.delete("/:id", async (req, res) => {
 
     try {
@@ -112,9 +96,4 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-/*
-APIs de metabuscador
-*/
-
 module.exports = router;
-

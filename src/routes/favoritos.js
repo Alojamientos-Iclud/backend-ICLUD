@@ -4,23 +4,8 @@ const { PrismaPg } = require("@prisma/adapter-pg");
 const prisma = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL) });
 const router = express.Router();
 
-/*
-    Favoritos de hoteles del catálogo propio.
-
-    Reutiliza la tabla Favorito (la misma del metabuscador). Para distinguir los
-    hoteles de nuestro catálogo, urlOrigen se guarda como "iclud:hotel:<id>" y
-    estas rutas solo leen/escriben las filas con ese prefijo.
-
-    Todas las rutas exigen sesión (requireAuth se aplica en server.js).
-*/
 const PREFIJO = "iclud:hotel:";
 
-/*
-    GET /api/favoritos
-
-    Devuelve los hoteles favoritos del usuario logueado (datos actuales del hotel),
-    del más recientemente guardado al más antiguo.
-*/
 router.get("/", async (req, res) => {
     try {
         const favoritos = await prisma.favorito.findMany({
@@ -42,11 +27,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-/*
-    POST /api/favoritos   body: { hotelId }
-
-    Marca un hotel como favorito (si ya lo era, no hace nada).
-*/
 router.post("/", async (req, res) => {
     try {
         const hotelId = Number(req.body.hotelId);
@@ -79,11 +59,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-/*
-    DELETE /api/favoritos/:hotelId
-
-    Quita un hotel de los favoritos del usuario.
-*/
 router.delete("/:hotelId", async (req, res) => {
     try {
         const hotelId = Number(req.params.hotelId);

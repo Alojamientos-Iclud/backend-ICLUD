@@ -1,13 +1,6 @@
 const crypto = require("crypto");
 
-/*
-    Tokens de sesión firmados (HMAC-SHA256), sin dependencias extra.
-    Formato: base64url(payload).base64url(firma)
-
-    Definí AUTH_SECRET en el .env (cualquier string largo y aleatorio).
-    Si no está definida se deriva de DATABASE_URL, pero es mejor tener una propia.
-*/
-const DURACION_MS = 7 * 24 * 60 * 60 * 1000; // 7 días
+const DURACION_MS = 7 * 24 * 60 * 60 * 1000;
 
 function secreto() {
     return process.env.AUTH_SECRET ||

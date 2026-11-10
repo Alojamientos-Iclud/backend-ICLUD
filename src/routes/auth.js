@@ -6,13 +6,6 @@ const { PrismaPg } = require("@prisma/adapter-pg");
 const prisma = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL) });
 const router = express.Router();
 
-/*
-    POST /api/admin/login (pongan eso cada vez que hagan un endpoint con esta API)
-
-    Verifica credenciales y rol de administrador en un solo paso.
-    No genera sesión ni token: como admin.html es la única pantalla protegida
-    por ahora, autenticación y autorización ocurren juntas acá.
-*/
 router.post("/login", async (req, res) => {
 
     try {
@@ -59,13 +52,6 @@ router.post("/login", async (req, res) => {
     }
 });
 
-/*
-    POST /api/auth/register  (también disponible como /api/admin/register)
-
-    Registra un usuario nuevo. Guarda el mail y la contraseña encriptada (bcrypt).
-    El rol (estatus) siempre es "usuario": nunca se toma del body, así nadie
-    puede registrarse como admin o hotelero mandando ese campo.
-*/
 router.post("/register", async (req, res) => {
 
     try {

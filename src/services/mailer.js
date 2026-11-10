@@ -13,10 +13,9 @@ const transporter = nodemailer.createTransport({
 
 async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, salida, noches, cantidad_huespedes, precioNoche, precioTotal, stripeUrl }) {
 
-    // Sumamos 1 día para compensar el desfase de UTC al parsear fechas sin hora
     const parsearFecha = (str) => {
         const [year, month, day] = str.split('-').map(Number);
-        return new Date(year, month - 1, day); // fecha LOCAL sin UTC
+        return new Date(year, month - 1, day);
     };
 
     const fechaLlegada = parsearFecha(llegada).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -33,8 +32,7 @@ async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, 
         <tr>
           <td align="center">
             <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
-              
-              <!-- HEADER -->
+
               <tr>
                 <td style="background:#1a1a2e;padding:32px;text-align:center;">
                   <h1 style="color:#ffffff;margin:0;font-size:28px;letter-spacing:2px;">ICLUD</h1>
@@ -42,18 +40,16 @@ async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, 
                 </td>
               </tr>
 
-              <!-- SALUDO -->
               <tr>
                 <td style="padding:36px 40px 0;">
                   <h2 style="color:#1a1a2e;margin:0 0 8px;">¡Hola, ${nombre_completo}! 👋</h2>
                   <p style="color:#555;font-size:15px;line-height:1.6;margin:0;">
-                    Recibimos tu solicitud de reserva. Revisá los detalles a continuación y cuando estés listo, 
+                    Recibimos tu solicitud de reserva. Revisá los detalles a continuación y cuando estés listo,
                     hacé clic en el botón para completar el pago de forma segura con Stripe.
                   </p>
                 </td>
               </tr>
 
-              <!-- DETALLE DE RESERVA -->
               <tr>
                 <td style="padding:28px 40px;">
                   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9ff;border-radius:10px;padding:24px;border:1px solid #e8eaf6;">
@@ -85,7 +81,7 @@ async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, 
                         </table>
                       </td>
                     </tr>
-                    <!-- DESGLOSE DE PRECIO -->
+
                     <tr>
                       <td style="padding-top:20px;border-top:1px solid #e0e3f0;">
                         <table width="100%" cellpadding="0" cellspacing="0">
@@ -106,10 +102,9 @@ async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, 
                 </td>
               </tr>
 
-              <!-- BOTÓN DE PAGO -->
               <tr>
                 <td style="padding:0 40px 40px;" align="center">
-                  <a href="${stripeUrl}" 
+                  <a href="${stripeUrl}"
                      style="display:inline-block;background:#635bff;color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:8px;font-size:16px;font-weight:bold;letter-spacing:0.5px;">
                     💳 Completar pago con Stripe
                   </a>
@@ -119,7 +114,6 @@ async function enviarMailConfirmacion({ nombre_completo, gmail, hotel, llegada, 
                 </td>
               </tr>
 
-              <!-- FOOTER -->
               <tr>
                 <td style="background:#f8f9ff;padding:20px 40px;text-align:center;border-top:1px solid #eee;">
                   <p style="color:#aaa;font-size:12px;margin:0;">© 2026 ICLUD — Proyecto de Prácticas Profesionalizantes</p>

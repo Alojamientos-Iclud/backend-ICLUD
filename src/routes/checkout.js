@@ -12,7 +12,6 @@ async function procesarCheckout(req, res) {
 
         console.log("Datos recibidos:", req.body);
 
-        // 1. Buscar hotel real en la BD
         console.log("1 - Datos recibidos");
         const hotel = await prisma.hotel.findUnique({
             where: { id: Number(hotelId) }
@@ -22,7 +21,6 @@ async function procesarCheckout(req, res) {
             return res.status(404).json({ error: "Alojamiento no encontrado o sin precio asignado." });
         }
 
-        // 2. Calcular noches y total en ARS
         console.log("2 - Hotel encontrado", hotel?.nombre);
         const fechaLlegada = new Date(llegada);
         const fechaSalida  = new Date(salida);
@@ -32,21 +30,8 @@ async function procesarCheckout(req, res) {
             return res.status(400).json({ error: "Las fechas de reserva no son válidas." });
         }
 
-        const precioTotal = hotel.precio * noches; // ARS, precio por noche * cantidad de noches
+        const precioTotal = hotel.precio * noches;
 
-        // 3. Guardar reserva en la BD
-        /*await prisma.formulario.create({
-            data: {
-                hotelId: Number(hotelId),
-                nombre_completo,
-                gmail,
-                cantidad_huespedes: Number(cantidad_huespedes),
-                llegada: new Date(llegada),
-                salida: new Date(salida),
-            }
-        });*/
-
-        // 4. Crear sesión de pago en Stripe (ARS)
         console.log("3 - Session Stripe creada");
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -56,7 +41,7 @@ async function procesarCheckout(req, res) {
                     product_data: {
                         name: `${hotel.nombre} — ${noches} noche${noches > 1 ? 's' : ''}`,
                     },
-                    unit_amount: precioTotal * 100, // Stripe trabaja en centavos
+                    unit_amount: precioTotal * 100,
                 },
                 quantity: 1,
             }],
@@ -65,7 +50,6 @@ async function procesarCheckout(req, res) {
             cancel_url:  'http://localhost:3000/cancel.html',
         });
 
-        // 5. Mandar mail con el link de Stripe
         console.log("4 - Mail enviado");
         await enviarMailConfirmacion({
             nombre_completo,

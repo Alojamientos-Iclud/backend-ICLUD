@@ -28,7 +28,6 @@ function guardarOfertas(ofertas) {
     }
 }
 
-// 1. GET /api/ofertas -> Leer pendientes
 router.get("/", (req, res) => {
     try {
         const ofertas = leerOfertas();
@@ -39,7 +38,6 @@ router.get("/", (req, res) => {
     }
 });
 
-// 2. POST /api/ofertas -> Guardar propuesta temporal
 router.post("/", (req, res) => {
     try {
         const { nombre, localizacion, cantidad_habitaciones, imagen_h, descripcion, precio } = req.body;
@@ -66,7 +64,6 @@ router.post("/", (req, res) => {
     }
 });
 
-// 3. DELETE /api/ofertas/:id -> Eliminar oferta (usado al rechazar o tras aprobar)
 router.delete("/:id", (req, res) => {
     try {
         const id = Number(req.params.id);
