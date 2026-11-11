@@ -60,3 +60,14 @@ model Favorito {
 
   @@unique([idUsuario, urlOrigen])
 }
+
+model OfertaPendiente {
+  id                    Int      @id @default(autoincrement())
+  nombre                String
+  localizacion          String
+  cantidad_habitaciones Int      @default(0)
+  imagen_h              String?
+  descripcion           String   @default("")
+  precio                Int      @default(0)
+  fecha_subido          DateTime @default(now())
+}
