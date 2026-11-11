@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const { PrismaPg } = require("@prisma/adapter-pg");
 
 // En serverless conviene la conexión "pooled" de Neon (pgbouncer).
-const connectionString = process.env.DATABASE_URL_POOLED || process.env.DATABASE_URL;
+const connectionString = process.env.DATABASE_URL || process.env.DATABASE_URL_POOLED;
 
 // Una sola instancia compartida (evita agotar conexiones entre rutas / invocaciones).
 const globalForPrisma = globalThis;
