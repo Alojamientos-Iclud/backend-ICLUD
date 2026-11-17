@@ -14,7 +14,7 @@ function soloAdmin(req, res, next) {
 router.get("/usuarios", requireAuth, soloAdmin, async (req, res) => {
     try {
         const usuarios = await prisma.usuario.findMany({
-            where: { estatus: "usuario" },
+            where: { estatus: { not: "admin" } },
             select: { id: true, gmail: true, estatus: true, estado: true },
             orderBy: { id: "asc" }
         });
@@ -35,15 +35,11 @@ router.patch("/usuarios/:id/estado", requireAuth, soloAdmin, async (req, res) =>
         return res.status(400).json({ error: "El estado debe ser true (desbloqueado) o false (bloqueado)" });
     }
 
-    try {
-        const objetivo = await prisma.usuario.findUnique({ where: { id }, select: { estatus: true } });
-        if (!objetivo) {
-            return res.status(404).json({ error: "No se encontró el usuario" });
-        }
-        if (objetivo.estatus !== "usuario") {
-            return res.status(400).json({ error: "Solo se pueden bloquear cuentas de usuario" });
-        }
+    if (id === req.usuario.id) {
+        return res.status(400).json({ error: "No podés bloquear tu propia cuenta" });
+    }
 
+    try {
         const usuario = await prisma.usuario.update({
             where: { id },
             data: { estado: req.body.estado },
