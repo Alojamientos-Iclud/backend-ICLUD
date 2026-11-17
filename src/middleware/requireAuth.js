@@ -12,10 +12,16 @@ module.exports = async function requireAuth(req, res, next) {
     try {
         const usuario = await prisma.usuario.findUnique({
             where: { id: payload.id },
-            select: { estado: true }
+            select: { estatus: true, estado: true }
         });
 
-        if (!usuario || !usuario.estado) {
+        if (!usuario) {
+            return res.status(401).json({ error: "Tenés que iniciar sesión para hacer esto" });
+        }
+
+        // admin y hotelero entran siempre; el resto solo si no está bloqueado
+        const exento = ["admin", "hotelero"].includes(usuario.estatus);
+        if (!exento && usuario.estado === false) {
             return res.status(403).json({ error: "Tu cuenta está bloqueada" });
         }
     } catch (error) {
