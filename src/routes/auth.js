@@ -28,6 +28,10 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ error: "Credenciales inválidas" });
         }
 
+        if (!usuario.estado) {
+            return res.status(403).json({ error: "Tu cuenta está bloqueada" });
+        }
+
         if (!["admin", "hotelero", "usuario"].includes(usuario.estatus)) {
             return res.status(403).json({ error: "No tenés permisos para acceder" });
         }
@@ -36,7 +40,7 @@ router.post("/login", async (req, res) => {
             mensaje: "Acceso concedido",
             estatus: usuario.estatus,
             token: firmarToken(usuario),
-            usuario: { id: usuario.id, gmail: usuario.gmail, estatus: usuario.estatus }
+            usuario: { id: usuario.id, gmail: usuario.gmail, estatus: usuario.estatus, estado: usuario.estado }
         });
 
     } catch (error) {
@@ -80,13 +84,14 @@ router.post("/register", async (req, res) => {
             data: {
                 gmail,
                 password: passwordHash,
-                estatus: "usuario"
+                estatus: "usuario",
+                estado: true
             }
         });
 
         res.status(201).json({
             mensaje: "Cuenta creada correctamente",
-            usuario: { id: usuario.id, gmail: usuario.gmail, estatus: usuario.estatus }
+            usuario: { id: usuario.id, gmail: usuario.gmail, estatus: usuario.estatus, estado: usuario.estado }
         });
 
     } catch (error) {
