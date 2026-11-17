@@ -19,7 +19,6 @@ module.exports = async function requireAuth(req, res, next) {
             return res.status(401).json({ error: "Tenés que iniciar sesión para hacer esto" });
         }
 
-        // admin y hotelero entran siempre; el resto solo si no está bloqueado
         const exento = ["admin", "hotelero"].includes(usuario.estatus);
         if (!exento && usuario.estado === false) {
             return res.status(403).json({ error: "Tu cuenta está bloqueada" });

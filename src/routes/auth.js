@@ -1,108 +1,65 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
-const { firmarToken } = require("../services/token");
 const prisma = require("../lib/prisma");
+const requireAuth = require("../middleware/requireAuth");
+
 const router = express.Router();
 
-router.post("/login", async (req, res) => {
+function soloAdmin(req, res, next) {
+    if (req.usuario.estatus !== "admin") {
+        return res.status(403).json({ error: "Solo un administrador puede hacer esto" });
+    }
+    next();
+}
 
+router.get("/usuarios", requireAuth, soloAdmin, async (req, res) => {
     try {
-
-        const gmail = String(req.body.gmail || "").trim().toLowerCase();
-        const password = req.body.password;
-
-        if (!gmail || !password) {
-            return res.status(400).json({ error: "Faltan credenciales" });
-        }
-
-        const usuario = await prisma.usuario.findFirst({
-            where: { gmail: { equals: gmail, mode: "insensitive" } }
+        const usuarios = await prisma.usuario.findMany({
+            where: { estatus: "usuario" },
+            select: { id: true, gmail: true, estatus: true, estado: true },
+            orderBy: { id: "asc" }
         });
-
-        if (!usuario) {
-            return res.status(401).json({ error: "Credenciales inválidas" });
-        }
-
-        const passwordValida = await bcrypt.compare(password, usuario.password);
-        if (!passwordValida) {
-            return res.status(401).json({ error: "Credenciales inválidas" });
-        }
-
-        const exento = ["admin", "hotelero"].includes(usuario.estatus);
-        if (!exento && usuario.estado === false) {
-            return res.status(403).json({ error: "Tu cuenta está bloqueada" });
-        }
-
-        if (!["admin", "hotelero", "usuario"].includes(usuario.estatus)) {
-            return res.status(403).json({ error: "No tenés permisos para acceder" });
-        }
-
-        res.json({
-            mensaje: "Acceso concedido",
-            estatus: usuario.estatus,
-            token: firmarToken(usuario),
-            usuario: { id: usuario.id, gmail: usuario.gmail, estatus: usuario.estatus, estado: usuario.estado }
-        });
-
+        return res.json(usuarios);
     } catch (error) {
-
         console.error(error);
-
-        res.status(500).json({
-            error: "Error al verificar credenciales"
-        });
-
+        return res.status(500).json({ error: "Error al obtener los usuarios" });
     }
 });
 
-router.post("/register", async (req, res) => {
+router.patch("/usuarios/:id/estado", requireAuth, soloAdmin, async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) {
+        return res.status(400).json({ error: "El id del usuario no es válido" });
+    }
+
+    if (typeof req.body.estado !== "boolean") {
+        return res.status(400).json({ error: "El estado debe ser true (desbloqueado) o false (bloqueado)" });
+    }
 
     try {
-
-        const gmail = String(req.body.gmail || "").trim().toLowerCase();
-        const password = req.body.password;
-
-        if (!gmail || !password) {
-            return res.status(400).json({ error: "Completá el correo y la contraseña" });
+        const objetivo = await prisma.usuario.findUnique({ where: { id }, select: { estatus: true } });
+        if (!objetivo) {
+            return res.status(404).json({ error: "No se encontró el usuario" });
+        }
+        if (objetivo.estatus !== "usuario") {
+            return res.status(400).json({ error: "Solo se pueden bloquear cuentas de usuario" });
         }
 
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(gmail)) {
-            return res.status(400).json({ error: "El correo no es válido" });
-        }
-
-        if (typeof password !== "string" || password.length < 6) {
-            return res.status(400).json({ error: "La contraseña debe tener al menos 6 caracteres" });
-        }
-
-        const existente = await prisma.usuario.findFirst({ where: { gmail: { equals: gmail, mode: "insensitive" } } });
-        if (existente) {
-            return res.status(409).json({ error: "Ese correo ya está registrado" });
-        }
-
-        const passwordHash = await bcrypt.hash(password, 10);
-
-        const usuario = await prisma.usuario.create({
-            data: {
-                gmail,
-                password: passwordHash,
-                estatus: "usuario",
-                estado: true
-            }
+        const usuario = await prisma.usuario.update({
+            where: { id },
+            data: { estado: req.body.estado },
+            select: { id: true, gmail: true, estatus: true, estado: true }
         });
 
-        res.status(201).json({
-            mensaje: "Cuenta creada correctamente",
-            usuario: { id: usuario.id, gmail: usuario.gmail, estatus: usuario.estatus, estado: usuario.estado }
+        return res.json({
+            mensaje: req.body.estado ? "Usuario desbloqueado correctamente" : "Usuario bloqueado correctamente",
+            usuario
         });
-
     } catch (error) {
-
+        if (error.code === "P2025") {
+            return res.status(404).json({ error: "No se encontró el usuario" });
+        }
         console.error(error);
-
-        res.status(500).json({
-            error: "Error al registrar el usuario"
-        });
-
+        return res.status(500).json({ error: "Error al modificar el estado del usuario" });
     }
 });
 
