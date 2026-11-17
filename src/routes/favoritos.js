@@ -4,6 +4,30 @@ const router = express.Router();
 
 const PREFIJO = "iclud:hotel:";
 
+router.get("/count", async (req, res) => {
+    try {
+        const favoritos = await prisma.favorito.findMany({
+            where: { idUsuario: req.usuario.id, urlOrigen: { startsWith: PREFIJO } },
+            select: { urlOrigen: true }
+        });
+
+        const ids = favoritos
+            .map(f => Number(f.urlOrigen.slice(PREFIJO.length)))
+            .filter(Number.isInteger);
+
+        const hoteles = await prisma.hotel.findMany({
+            where: { id: { in: ids } },
+            select: { id: true }
+        });
+        const idsExistentes = new Set(hoteles.map(hotel => hotel.id));
+
+        res.json({ count: ids.filter(id => idsExistentes.has(id)).length });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al contar favoritos" });
+    }
+});
+
 router.get("/", async (req, res) => {
     try {
         const favoritos = await prisma.favorito.findMany({
