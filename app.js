@@ -6,14 +6,13 @@ const cors = require("cors");
 const hotelesRouter = require("./src/routes/hoteles");
 const checkoutRouter = require("./src/routes/checkout");
 const authRouter = require("./src/routes/auth");
+const adminRouter = require("./src/routes/admin");
 const ofertasRouter = require("./src/routes/ofertas");
 const favoritosRouter = require("./src/routes/favoritos");
 const requireAuth = require("./src/middleware/requireAuth");
 
 const app = express();
 
-// Orígenes permitidos: FRONTEND_URL (puede ser una lista separada por comas),
-// el dominio de producción y localhost para desarrollo.
 const normalizar = (url) => String(url || "").trim().replace(/\/+$/, "");
 
 const origenesPermitidos = [
@@ -42,6 +41,7 @@ app.get("/api/health", (req, res) => res.json({ ok: true }));
 app.use("/api/hoteles", hotelesRouter);
 app.use("/api/checkout", requireAuth, checkoutRouter);
 app.use("/api/admin", authRouter);
+app.use("/api/admin", adminRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/ofertas", ofertasRouter);
 app.use("/api/favoritos", requireAuth, favoritosRouter);
